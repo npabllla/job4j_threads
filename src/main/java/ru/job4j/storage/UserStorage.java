@@ -3,21 +3,27 @@ package ru.job4j.storage;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @ThreadSafe
 public class UserStorage {
     @GuardedBy("this")
-    private final List<User> users = new ArrayList<>();
+    private final Map<Integer, User> users = new HashMap<>();
 
     public synchronized boolean add(User user) {
-        return users.add(user);
+        if (!users.containsKey(user.getId())) {
+            users.put(user.getId(), user);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public synchronized boolean update(User user) {
-        if (users.size() > user.getId()) {
-            users.set(user.getId(), new User(user.getId(), user.getAmount()));
+        if (delete(user)) {
+            users.put(user.getId(), user);
             return true;
         } else {
             return false;
@@ -25,17 +31,19 @@ public class UserStorage {
     }
 
     public synchronized boolean delete(User user) {
-        return users.remove(user);
+        return users.remove(user.getId()) != null;
     }
 
     public synchronized void transfer(int fromId, int told, int amount) {
-        if (users.size() < fromId || users.size() < told) {
-            throw new IndexOutOfBoundsException();
+        User userFrom = users.get(fromId);
+        User userTo = users.get(told);
+        if (userFrom != null && userTo != null) {
+            users.remove(userFrom.getId());
+            users.remove(userTo.getId());
+            users.put(fromId, new User(userFrom.getId(), userFrom.getAmount() - amount));
+            users.put(told, new User(userTo.getId(), userTo.getAmount() + amount));
         } else {
-            User userFrom = users.get(fromId);
-            User userTo = users.get(told);
-            users.set(fromId, new User(userFrom.getId(), userFrom.getAmount() - amount));
-            users.set(told, new User(userTo.getId(), userTo.getAmount() + amount));
+            throw new NoSuchElementException();
         }
     }
 }
