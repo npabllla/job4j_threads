@@ -1,6 +1,7 @@
 package ru.job4j.io;
 
 import java.io.*;
+import java.util.function.Predicate;
 
 public class ParseFile {
     private File file;
@@ -13,12 +14,14 @@ public class ParseFile {
         return file;
     }
 
-    public synchronized String getContent() {
+    public synchronized String getContent(Predicate<Integer> cond) {
         StringBuilder output = new StringBuilder();
         try (FileInputStream reader = new FileInputStream(file)) {
             int data;
             while ((data = reader.read()) > 0) {
-                output.append((char) data);
+                if (cond.test(data)) {
+                    output.append((char) data);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -27,18 +30,7 @@ public class ParseFile {
     }
 
     public synchronized String getContentWithoutUnicode() {
-        StringBuilder output = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            int data;
-            while ((data = reader.read()) > 0) {
-                if (data < 0x80) {
-                    output.append((char) data);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return output.toString();
+        return getContent(data -> data < 0x80);
     }
 
     public synchronized void saveContent(String content) {
@@ -50,4 +42,6 @@ public class ParseFile {
             e.printStackTrace();
         }
     }
+
+
 }
