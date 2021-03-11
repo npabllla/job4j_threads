@@ -13,9 +13,13 @@ public class SimpleBlockingQueue<T> {
     private final Queue<T> queue = new LinkedList<>();
     private int amountOfElements = 0;
 
-    public synchronized void offer(T value) throws InterruptedException {
+    public synchronized void offer(T value) {
         while (!queue.offer(value) && amountOfElements == queue.size()) {
-            this.wait();
+            try {
+                this.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         amountOfElements++;
         this.notifyAll();
@@ -28,5 +32,9 @@ public class SimpleBlockingQueue<T> {
         this.notifyAll();
         amountOfElements--;
         return queue.poll();
+    }
+
+    public synchronized boolean isEmpty() {
+        return queue.isEmpty();
     }
 }
