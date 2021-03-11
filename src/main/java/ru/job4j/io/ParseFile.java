@@ -14,19 +14,8 @@ public class ParseFile {
         return file;
     }
 
-    public synchronized String getContent(Predicate<Integer> cond) {
-        StringBuilder output = new StringBuilder();
-        try (FileInputStream reader = new FileInputStream(file)) {
-            int data;
-            while ((data = reader.read()) > 0) {
-                if (cond.test(data)) {
-                    output.append((char) data);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return output.toString();
+    public synchronized String getContent() {
+        return getContent(data -> true);
     }
 
     public synchronized String getContentWithoutUnicode() {
@@ -43,5 +32,19 @@ public class ParseFile {
         }
     }
 
+    private synchronized String getContent(Predicate<Integer> cond) {
+        StringBuilder output = new StringBuilder();
+        try (FileInputStream reader = new FileInputStream(file)) {
+            int data;
+            while ((data = reader.read()) > 0) {
+                if (cond.test(data)) {
+                    output.append((char) data);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return output.toString();
+    }
 
 }
