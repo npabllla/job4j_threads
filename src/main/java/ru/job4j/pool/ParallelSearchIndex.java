@@ -33,12 +33,12 @@ public class ParallelSearchIndex<T extends Comparable<? super T>> extends Recurs
                 from = mid + 1;
             }
         }
-        return 0;
+        return -1;
     }
 
     @Override
     protected Integer compute() {
-        if (array.length <= 10) {
+        if ((to - from) <= 10) {
             return binarySearch();
         }
         int mid = (from + to) / 2;
@@ -46,6 +46,6 @@ public class ParallelSearchIndex<T extends Comparable<? super T>> extends Recurs
         ParallelSearchIndex<T> rightPart = new ParallelSearchIndex<>(this.array, element, mid + 1, to);
         leftPart.fork();
         rightPart.fork();
-        return leftPart.join() + rightPart.join();
+        return leftPart.join() + rightPart.join()  + 1;
     }
 }
