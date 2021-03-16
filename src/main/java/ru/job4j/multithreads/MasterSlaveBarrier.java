@@ -4,7 +4,7 @@ public class MasterSlaveBarrier {
     private boolean flag = true;
 
     public synchronized void tryMaster() {
-        if (!flag) {
+        while (!flag) {
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -14,7 +14,7 @@ public class MasterSlaveBarrier {
     }
 
     public synchronized void trySlave() {
-        if (flag) {
+        while (flag) {
             try {
                 wait();
             } catch (InterruptedException e) {
