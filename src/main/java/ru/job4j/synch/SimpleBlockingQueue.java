@@ -20,8 +20,8 @@ public class SimpleBlockingQueue<T> {
                 e.printStackTrace();
             }
         }
-        queue.offer(value);
         this.notifyAll();
+        queue.offer(value);
     }
 
     public synchronized T poll() throws InterruptedException {
