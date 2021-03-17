@@ -20,16 +20,17 @@ public class SimpleBlockingQueue<T> {
                 e.printStackTrace();
             }
         }
-        this.notifyAll();
         queue.offer(value);
+        this.notifyAll();
     }
 
     public synchronized T poll() throws InterruptedException {
         while (queue.isEmpty()) {
             this.wait();
         }
+        T element = queue.poll();
         this.notifyAll();
-        return queue.poll();
+        return element;
     }
 
     public synchronized boolean isEmpty() {
