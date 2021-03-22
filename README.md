@@ -2,3 +2,4 @@
 [![codecov](https://codecov.io/gh/npabllla/job4j_threads/branch/master/graph/badge.svg?token=9IRYAFM33A)](https://codecov.io/gh/npabllla/job4j_threads)
 # job4j_threads
 Объединение зафиксированных измененей
+## training with branches 
